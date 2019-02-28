@@ -9,7 +9,9 @@
 % field of 1e7V/m. The magnitude of the force experienced by each particle
 % is then 1.602e-12 N, which in turn leads to an acceleration of
 % 1.7588m/s^2.
-% 
+% The current density component from electron drift is given by J = qnuE,
+% where u is the mobility of electrons, E is the electric field, n is the
+% number of free electrons, and q is the elementary charge.
 clear
 C.q_0 = 1.60217653e-19;
 C.m_0 = 9.10938215e-31;
@@ -102,3 +104,4 @@ plot(dummy, Temperature)
 title('Temperature of System Over Time')
 xlabel('time')
 ylabel('Temperature (K)')
+figure(6)
