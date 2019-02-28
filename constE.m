@@ -67,25 +67,25 @@ while t < Tstop
     VY(top | bottom) = VY(top | bottom) * -1;
     %calculations for temperature
     Temperature(iteration) = 0.26*C.m_0*mean(V.^2)/4/C.kb;
-    figure(4)
+    figure(1)
     xlim([0 frameWidth])
     ylim([0 frameHeight])
     hold on
     %plotting, but avoid plotting the full horizontal jump
     if abs(Xnext(1) - X(1)) < 2*abs(VX(1))*dt
-        figure(4)
+        figure(1)
         plot([Xnext(1) X(1)], [Ynext(1) Y(1)], 'blue')
     end
     if abs(Xnext(2) - X(2)) < 2*abs(VX(2))*dt
-        figure(4)
+        figure(1)
         plot([Xnext(2) X(2)], [Ynext(2) Y(2)], 'red')
     end
     if abs(Xnext(3) - X(3)) < 2*abs(VX(3))*dt
-        figure(4)
+        figure(1)
         plot([Xnext(3) X(3)], [Ynext(3) Y(3)], 'green')
     end
     if abs(Xnext(4) - X(4)) < 2*abs(VX(4))*dt
-        figure(4)
+        figure(1)
         plot([Xnext(4) X(4)], [Ynext(4) Y(4)], 'black')
     end
     
@@ -98,10 +98,9 @@ while t < Tstop
     pause(0.0001);
 end
 %Outputs, temperature, mean free path, and mean time between collisions 
-figure(5)
+figure(2)
 dummy = linspace(0,iteration, length(Temperature));
 plot(dummy, Temperature)
 title('Temperature of System Over Time')
 xlabel('time')
 ylabel('Temperature (K)')
-figure(6)
