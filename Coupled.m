@@ -21,7 +21,7 @@ for i = 1:nx
         n = j + (i-1)*ny;
         if i == 1
             G(n,n) = 1;
-            B(n) = 100;
+            B(n) = 3;
         elseif i == nx
             G(n,n) = 1;
         elseif j == 1
@@ -96,8 +96,8 @@ Tstop = 1000*dt;
 t = 0;
 freepath = 0.2e-12;
 Pscatter = 1 - exp(-dt/freepath);
-AccelX = Ex .* C.q_0 ./ C.m_0;
-AccelY = Ey .* C.q_0 ./ C.m_0;
+AccelX = 2e9* Ey .* C.q_0 ./ C.m_0;
+AccelY = 1e9* Ex .* C.q_0 ./ C.m_0;
 
 %initializing vectors
 Xnext = zeros(1,nAtoms);
@@ -139,8 +139,9 @@ while t < Tstop
     VY(R<Pscatter) = Vth*randn(1);
     %accelerate
     ain = sub2ind(size(AccelX),Xindex, Yindex);
+    aiin = sub2ind(size(AccelY),Xindex, Yindex);
     VX = VX + AccelX(ain)*dt;
-    VY = VY + AccelY(ain)*dt;
+    VY = VY + AccelY(aiin)*dt;
     V = sqrt(VY.*VY+VX.*VX);
     
     %set next
