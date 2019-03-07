@@ -79,21 +79,17 @@ for i = 1:nx
     end
 end
 [Ex,Ey] = gradient(-Vmap);
+%from here nothing above really matters, the field is solved and its all
+%good
 
 
-%tighten up my boundary conditions on the bottleneck so there is no
-%penetration
-%also, in order to use the EX,EY, and VX,VY vectors together, I need to
-%index things in a different way. each VX and VY corresponds to a
-%position in the X,Y vectors. at each step, I need to use the find which E
-%vectors I'm accelerating each particle with.
 C.q_0 = 1.60217653e-19;
 C.m_0 = 9.10938215e-31;
 C.kb = 1.3806504e-23;
 C.T = 300;
 frameWidth = 200e-9;
 frameHeight = 100e-9;
-nAtoms = 1000;
+nAtoms = 10;
 Vth = sqrt(2*C.kb*C.T /(0.26*C.m_0));
 dt = frameHeight/Vth/100;
 Tstop = 1000*dt;
@@ -115,18 +111,42 @@ R = zeros(1, nAtoms);
 Temperature = zeros(1, 100);
 iteration = 1;
 
+%defining box boundaries
+boxleft = X>0.8e-7;
+boxright = X<1.2e-7;
+box1bottom = Y>0.6e-7;
+box2top = Y<0.4e-7;
+boxedin = (boxleft&boxright&box1bottom)|(boxleft&boxright&box2top);
+%removing particles from the boxes
+while sum(boxedin)>0
+X(boxedin) = rand*frameWidth;
+Y(boxedin) = rand*frameHeight;
+boxleft = X>0.8e-7;
+boxright = X<1.2e-7;
+box1bottom = Y>0.6e-7;
+box2top = Y<0.4e-7;
+boxedin = (boxleft&boxright&box1bottom)|(boxleft&boxright&box2top);
+end
+%all particles are out of the boxes to begin with
 
 while t < Tstop
-    %determines which particles scatter and performs calculations on them
-    %to determine mean free path and time between collisions
+    
+    Xindex = ceil(X * 1e9);
+    Yindex = ceil(Y * 1e9);
+    %scatter
     R = rand(1,nAtoms);
     VX(R<Pscatter) = Vth*randn(1);
     VY(R<Pscatter) = Vth*randn(1);
-    VX = VX + AccelX*dt;
-    VY = VY + AccelY*dt;
+    %accelerate
+    ain = sub2ind(size(AccelX),Xindex, Yindex(p));
+    
+    for p = 1:nAtoms
+    VX(p) = VX(p) + AccelX(Xindex(p), Yindex(p))*dt;
+    VY(p) = VY(p) + AccelY(Xindex(p), Yindex(p))*dt;
+    end
     V = sqrt(VY.*VY+VX.*VX);
     
-    
+    %set next
     Xnext = X + VX*dt;
     Ynext = Y + VY*dt;
     %X boundary conditions set
@@ -138,11 +158,26 @@ while t < Tstop
     top = Ynext > frameHeight;
     bottom = Ynext < 0;
     VY(top | bottom) = VY(top | bottom) * -1;
+    Ynext = Y + VY*dt;
+    %set boundary for sides of boxes
+    box1sides = (Ynext>0.6e-7)&(Xnext>0.78e-7)&(Xnext<1.22e-7);
+    box2sides = (Ynext<0.4e-7)&(Xnext>0.78e-7)&(Xnext<1.22e-7);
+    topbox = (Y<0.57e-7)&(Ynext>0.57e-7)&(Xnext>0.8e-7)&(Xnext<1.2e-7);
+    bottombox = (Y>0.43e-7)&(Ynext<0.43e-7)&(Xnext>0.8e-7)&(Xnext<1.2e-7);
+    VY(topbox|bottombox) = VY(topbox|bottombox) * -1;
+    VX(topbox|bottombox|box1sides|box2sides) = VX(topbox|bottombox|box1sides|box2sides) * -1;
+    
     %calculations for temperature
     Temperature(iteration) = 0.26*C.m_0*mean(V.^2)/4/C.kb;
     figure(1)
     xlim([0 frameWidth])
     ylim([0 frameHeight])
+    plot([0.8e-7 0.8e-7],[0 0.4e-7], 'black')
+    plot([1.2e-7 1.2e-7],[0 0.4e-7], 'black')
+    plot([0.8e-7 1.2e-7],[0.4e-7 0.4e-7], 'black')
+    plot([0.8e-7 0.8e-7],[1e-7 0.6e-7], 'black')
+    plot([1.2e-7 1.2e-7],[1e-7 0.6e-7], 'black')
+    plot([0.8e-7 1.2e-7],[0.6e-7 0.6e-7], 'black')
     hold on
     %plotting, but avoid plotting the full horizontal jump
     if abs(Xnext(1) - X(1)) < 2*abs(VX(1))*dt
