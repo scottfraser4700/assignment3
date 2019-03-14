@@ -1,6 +1,25 @@
 %% Section 3 - Coupled Simulations
-%first solve the potential and field, then have the particles interact with
-%it
+% In this section of the assignment, I have coupled the electron trajectory
+% simulations with the finite difference solution of the electric fields.
+% The electrons respond to the electric field by having curved
+% trajectories, pointing along the direction of the field, or towards the
+% right hand side of the simulation window. specular reflection is used for
+% the boundaries of the bottleneck, and the top and bottom boundaries of
+% the simulation window. 
+% The solution of the electric field is not changed at all from the
+% previous section, and is only done once, as opposed to doing it every
+% loop. The particles still exhibit their scattering behaviour, to keep the
+% conservation of energy intact for the system. A cool trick using the
+% sub2ind function is used to eliminate the need for a nested for loop
+% inside the main while loop to update the velocities of the particles
+% based on what cell of the window they reside in. This trick speeds up the
+% simulation significantly compared to the nested loop method.
+% To enhance this simulation further, it could become significantly more
+% complicated by recognizing that the current flow through the system would
+% generate magnetic fields, which would in turn change the electric field
+% present in the system. A super complicated Yee cell method could be
+% employed, but it would be unnecessary and tragically difficult for me to implement it
+% with my current Matlab skillset.
 nx = 200;
 ny = 100;
 G = sparse(nx*ny, nx*ny);

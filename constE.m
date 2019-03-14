@@ -11,7 +11,7 @@
 % 1.7588m/s^2.
 % The current density component from electron drift is given by J = qnuE,
 % where u is the mobility of electrons, E is the electric field, n is the
-% number of free electrons, and q is the elementary charge.
+% number of free electrons, and q is the elementary charge. 
 clear
 C.q_0 = 1.60217653e-19;
 C.m_0 = 9.10938215e-31;
@@ -26,10 +26,11 @@ Tstop = 750*dt;
 t = 0;
 freepath = 0.2e-12;
 Pscatter = 1 - exp(-dt/freepath);
-Voltage = 2;
+Voltage = 1;
 Efield = Voltage / frameWidth;
 Force = Efield * C.q_0;
 Accel = Force / C.m_0;
+J = C.q_0*nAtoms*Efield*
 
 %initializing vectors
 Xnext = zeros(1,nAtoms);
@@ -97,10 +98,44 @@ while t < Tstop
     iteration = iteration + 1;
     pause(0.0001);
 end
-%Outputs, temperature, mean free path, and mean time between collisions 
-figure(2)
-dummy = linspace(0,iteration, length(Temperature));
-plot(dummy, Temperature)
-title('Temperature of System Over Time')
-xlabel('time')
-ylabel('Temperature (K)')
+%Outputs:Temperature map, Electron Density map
+% figure(2)
+% dummy = linspace(0,iteration, length(Temperature));
+% plot(dummy, Temperature)
+% title('Temperature of System Over Time')
+% xlabel('time')
+% ylabel('Temperature (K)')
+
+
+
+
+%electron density map
+figure(3)
+EDM = hist3([X',Y'],[30,30]);
+pcolor(EDM')
+title('Electron Density Map')
+view(2)
+
+%temperature map
+xLim = linspace(0,frameWidth,100);
+yLim = linspace(0,frameHeight,100);
+xTempReg = discretize(X,xLim);
+yTempReg = discretize(Y,yLim);
+for q=1:1:100
+    for w=1:1:100
+        %Temperature contained in defined region
+        tempReg = (q == xTempReg) & (w == yTempReg); 
+        
+        %Total velocities in region
+        vxTot=sum(VX(tempReg));
+        vyTot=sum(VY(tempReg));
+        vTot = sqrt((vxTot)^2+(vyTot)^2);
+        
+        %Calculate Temperature
+        tempMap(q,w) = C.m_0*0.26*(vTot)^2/(2*C.kb);
+    end
+end
+figure(8)
+surf(tempMap)
+view(2)
+title('Temperature Map')

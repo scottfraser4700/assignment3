@@ -1,8 +1,11 @@
 %% Finite Difference Solution of Electric Field
-%starting from the last part of assignment2, remove the plots of
-%conductivity map and current density. the boundary condition matrix may
-%need to change based on what we are supposed to do, unclear for now.
-%otherwise its cut and paste identical. no further work needed.
+% This section prepares the electric field solution for use in the next
+% section of the assignment. In the previous section, we assumed a constant
+% field across the entirety of the simulation window. Here, we have a
+% non-constant conductivity across the field of view. The different
+% boundary conditions produce different results for the potential and
+% electric field, both of which are plotted. The finite difference matrix method
+% is used, in exactly the same way as in assignment 2.
 nx = 200;
 ny = 100;
 G = sparse(nx*ny, nx*ny);
