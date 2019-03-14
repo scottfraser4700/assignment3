@@ -86,15 +86,16 @@ end
 
  
 %plotting potential
-figure(3)
+figure(4)
 surf(Vmap)
+
 title('Potential')
 ylabel('X dimension (L=200)')
 xlabel('Y dimension (W=100)')
 
 %plotting electric field
 [Ex,Ey] = gradient(-Vmap);
-figure(4)
+figure(5)
 quiver(Ex,Ey)
 title('Electric field')
 ylabel('X dimension (L=200)')

@@ -30,7 +30,7 @@ Voltage = 1;
 Efield = Voltage / frameWidth;
 Force = Efield * C.q_0;
 Accel = Force / C.m_0;
-J = C.q_0*nAtoms*Efield*
+J = C.q_0*nAtoms*Efield;
 
 %initializing vectors
 Xnext = zeros(1,nAtoms);
@@ -98,19 +98,10 @@ while t < Tstop
     iteration = iteration + 1;
     pause(0.0001);
 end
-%Outputs:Temperature map, Electron Density map
-% figure(2)
-% dummy = linspace(0,iteration, length(Temperature));
-% plot(dummy, Temperature)
-% title('Temperature of System Over Time')
-% xlabel('time')
-% ylabel('Temperature (K)')
-
-
 
 
 %electron density map
-figure(3)
+figure(2)
 EDM = hist3([X',Y'],[30,30]);
 pcolor(EDM')
 title('Electron Density Map')
@@ -135,7 +126,7 @@ for q=1:1:100
         tempMap(q,w) = C.m_0*0.26*(vTot)^2/(2*C.kb);
     end
 end
-figure(8)
+figure(3)
 surf(tempMap)
 view(2)
 title('Temperature Map')

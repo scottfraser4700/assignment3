@@ -111,7 +111,7 @@ frameHeight = 100e-9;
 nAtoms = 10;
 Vth = sqrt(2*C.kb*C.T /(0.26*C.m_0));
 dt = frameHeight/Vth/100;
-Tstop = 1000*dt;
+Tstop = 750*dt;
 t = 0;
 freepath = 0.2e-12;
 Pscatter = 1 - exp(-dt/freepath);
@@ -175,18 +175,18 @@ while t < Tstop
     top = Ynext > frameHeight;
     bottom = Ynext < 0;
     VY(top | bottom) = VY(top | bottom) * -1;
-    Ynext = Y + VY*dt;
+
     %set boundary for sides of boxes
-    box1sides = (Ynext>0.6e-7)&(Xnext>0.78e-7)&(Xnext<1.22e-7);
-    box2sides = (Ynext<0.4e-7)&(Xnext>0.78e-7)&(Xnext<1.22e-7);
-    topbox = (Y<0.57e-7)&(Ynext>0.57e-7)&(Xnext>0.8e-7)&(Xnext<1.2e-7);
-    bottombox = (Y>0.43e-7)&(Ynext<0.43e-7)&(Xnext>0.8e-7)&(Xnext<1.2e-7);
+    boxsides = (Ynext > 0.6e-7 | Ynext < 0.4e-7)&(Xnext>0.75e-7)&(Xnext<1.25e-7);
+    topbox = (Y<0.60e-7)&(Ynext>0.60e-7)&(Xnext>0.8e-7)&(Xnext<1.2e-7);
+    bottombox = (Y>0.40e-7)&(Ynext<0.40e-7)&(Xnext>0.8e-7)&(Xnext<1.2e-7);
     VY(topbox|bottombox) = VY(topbox|bottombox) * -1;
-    VX(topbox|bottombox|box1sides|box2sides) = VX(topbox|bottombox|box1sides|box2sides) * -1;
+    VX(boxsides) = VX(boxsides) * -1;
     
+    Ynext = Y + VY*dt;
     %calculations for temperature
     Temperature(iteration) = 0.26*C.m_0*mean(V.^2)/4/C.kb;
-    figure(1)
+    figure(6)
     xlim([0 frameWidth])
     ylim([0 frameHeight])
     plot([0.8e-7 0.8e-7],[0 0.4e-7], 'black')
@@ -198,19 +198,19 @@ while t < Tstop
     hold on
     %plotting, but avoid plotting the full horizontal jump
     if abs(Xnext(1) - X(1)) < 2*abs(VX(1))*dt
-        figure(1)
+        figure(6)
         plot([Xnext(1) X(1)], [Ynext(1) Y(1)], 'blue')
     end
     if abs(Xnext(2) - X(2)) < 2*abs(VX(2))*dt
-        figure(1)
+        figure(6)
         plot([Xnext(2) X(2)], [Ynext(2) Y(2)], 'red')
     end
     if abs(Xnext(3) - X(3)) < 2*abs(VX(3))*dt
-        figure(1)
+        figure(6)
         plot([Xnext(3) X(3)], [Ynext(3) Y(3)], 'green')
     end
     if abs(Xnext(4) - X(4)) < 2*abs(VX(4))*dt
-        figure(1)
+        figure(6)
         plot([Xnext(4) X(4)], [Ynext(4) Y(4)], 'black')
     end
     
